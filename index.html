@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vui Học Lượng Giác - Toán 11</title>
+    <style>
+        :root {
+            --primary-color: #ff6b6b;
+            --secondary-color: #4ecdc4;
+            --bg-color: #f7fff7;
+            --text-color: #2f3e46;
+            --accent-color: #ffe66d;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 650px;
+            box-sizing: border-box;
+            border: 5px solid var(--accent-color);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-top: 0;
+            font-size: 28px;
+            text-shadow: 2px 2px #ffe66d;
+        }
+
+        .screen { display: none; }
+        .active { display: block; }
+
+        /* Form nhập thông tin */
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #4a5568;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--secondary-color);
+            border-radius: 10px;
+            font-size: 16px;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        /* Thẻ thông tin và thời gian */
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #e8f1f5;
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        #timer {
+            color: var(--primary-color);
+            font-size: 18px;
+            background: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: 2px solid var(--primary-color);
+        }
+
+        /* Mức độ câu hỏi */
+        .level-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 10px;
+        }
+        .level-easy { background-color: #2ecc71; }
+        .level-medium { background-color: #f39c12; }
+        .level-hard { background-color: #e74c3c; }
+
+        /* Câu hỏi và đáp án */
+        .question {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+        .option-btn {
+            background-color: #fff;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 15px;
+            font-size: 16px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .option-btn:hover {
+            background-color: #f0fff4;
+            border-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        .option-btn.selected {
+            background-color: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+
+        /* Nút điều hướng */
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: background 0.2s;
+            box-shadow: 0 4px 0 #d94545;
+        }
+        .btn:hover { background-color: #e05656; }
+        .btn:active { transform: translateY(4px); box-shadow: none; }
+
+        .nav-btns {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        /* Màn hình kết quả */
+        .result-card {
+            text-align: center;
+            background-color: #f0fff4;
+            border: 3px dashed var(--secondary-color);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .score {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="start-screen" class="screen active">
+        <h1>📐 VUI HỌC LƯỢNG GIÁC 📊</h1>
+        <p style="text-align: center; font-weight: bold; color: #666;">Thử thách 10 câu hỏi Góc và Cung lượng giác (Thời gian: 5 phút)</p>
+        <div class="input-group">
+            <label for="username">Họ và tên học sinh:</label>
+            <input type="text" id="username" placeholder="Nhập họ và tên của em...">
+        </div>
+        <div class="input-group">
+            <label for="userclass">Lớp:</label>
+            <input type="text" id="userclass" placeholder="Ví dụ: 11A1, 11B2...">
+        </div>
+        <button class="btn" onclick="startQuiz()">Bắt Đầu Chơi Ngay! 🚀</button>
+    </div>
+
+    <div id="quiz-screen" class="screen">
+        <div class="quiz-header">
+            <div>👤 <span id="display-info"></span></div>
+            <div id="timer">05:00</div>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span id="question-counter" style="font-weight: bold; color: #718096;">Câu hỏi 1/10</span>
+            <span id="question-level" class="level-badge">Dễ</span>
+        </div>
+
+        <div id="question-text" class="question">Nội dung câu hỏi sẽ hiển thị ở đây?</div>
+        
+        <div id="options" class="options-container">
+            </div>
+
+        <div class="nav-btns">
+            <button class="btn" id="prev-btn" onclick="prevQuestion()" style="background-color: #a0aec0; box-shadow: 0 4px 0 #718096;">Quay lại</button>
+            <button class="btn" id="next-btn" onclick="nextQuestion()">Tiếp theo</button>
+        </div>
+    </div>
+
+    <div id="result-screen" class="screen">
+        <h1>🎉 KẾT QUẢ TRÒ CHƠI 🎉</h1>
+        <div class="result-card">
+            <h3 style="margin: 0; color: #2d3748;">Thí sinh: <span id="res-name" style="color: var(--secondary-color);"></span></h3>
+            <h4 style="margin: 5px 0 15px 0; color: #718096;">Lớp: <span id="res-class"></span></h4>
+            <hr style="border: 1px transparent; border-top: 1px solid #e2e8f0;">
+            <p style="font-size: 18px; margin-bottom: 0;">Số điểm của bạn đạt được:</p>
+            <div class="score"><span id="res-score">0</span> / 10</div>
+            <p id="res-comment" style="font-weight: bold; font-style: italic; color: #4a5568;"></p>
+        </div>
+        <button class="btn" onclick="location.reload()" style="background-color: var(--secondary-color); box-shadow: 0 4px 0 #319795;">Chơi lại từ đầu 🔄</button>
+    </div>
+</div>
+
+<script>
+// Ngân hàng dữ liệu 10 câu hỏi trắc nghiệm Góc và Cung lượng giác toán 11
+const quizData = [
+    // MỨC ĐỘ: NHẬN BIẾT (DỄ) - 4 Câu
+    {
+        level: "Nhận biết", levelClass: "level-easy",
+        q: "Đổi số đo của góc α = 180° sang đơn vị radian.",
+        options: ["A. π/2 (rad)", "B. π (rad)", "C. 2π (rad)", "D. 3π/2 (rad)"],
+        correct: 1
+    },
+    {
+        level: "Nhận biết", levelClass: "level-easy",
+        q: "Trên đường tròn lượng giác, khẳng định nào sau đây là ĐÚNG?",
+        options: ["A. Trục hoành là trục sin", "B. Trục tung là trục cosin", "C. Trục hoành là trục cosin", "D. Trục tung là trục cotan"],
+        correct: 2
+    },
+    {
+        level: "Nhận biết", levelClass: "level-easy",
+        q: "Công thức nào sau đây là công thức lượng giác cơ bản?",
+        options: ["A. sin²x + cos²x = 1", "B. sin²x - cos²x = 1", "C. sinx + cosx = 1", "D. tanx * cotanx = -1"],
+        correct: 0
+    },
+    {
+        level: "Nhận biết", levelClass: "level-easy",
+        q: "Góc có số đo α = -45° thuộc góc phần tư thứ mấy trên đường tròn lượng giác?",
+        options: ["A. Thứ I", "B. Thứ II", "C. Thứ III", "D. Thứ IV"],
+        correct: 3
+    },
+    // MỨC ĐỘ: THÔNG HIỂU (TRUNG BÌNH) - 4 Câu
+    {
+        level: "Thông hiểu", levelClass: "level-medium",
+        q: "Tính độ dài l của cung tròn có bán kính R = 10 cm và có số đo α = π/2.",
+        options: ["A. l = 5π (cm)", "B. l = 10π (cm)", "C. l = 20π (cm)", "D. l = 5 (cm)"],
+        correct: 0
+    },
+    {
+        level: "Thông hiểu", levelClass: "level-medium",
+        q: "Cho góc lượng giác α thỏa mãn π/2 < α < π. Khẳng định nào sau đây là đúng về dấu của các giá trị lượng giác?",
+        options: ["A. sinα > 0, cosα > 0", "B. sinα > 0, cosα < 0", "C. sinα < 0, cosα > 0", "D. sinα < 0, cosα < 0"],
+        correct: 1
+    },
+    {
+        level: "Thông hiểu", levelClass: "level-medium",
+        q: "Rút gọn biểu thức đơn giản sau: A = cos(π/2 - x) + sin(π - x).",
+        options: ["A. A = 0", "B. A = 2cosx", "C. A = 2sinx", "D. A = sinx + cosx"],
+        correct: 2
+    },
+    {
+        level: "Thông hiểu", levelClass: "level-medium",
+        q: "Biết sinα = 3/5 và 0 < α < π/2. Tính giá trị của cosα.",
+        options: ["A. cosα = -4/5", "B. cosα = 4/5", "C. cosα = 16/25", "D. cosα = ±4/5"],
+        correct: 1
+    },
+    // MỨC ĐỘ: VẬN DỤNG (KHÓ) - 2 Câu
+    {
+        level: "Vận dụng", levelClass: "level-hard",
+        q: "Một đường tròn góc lượng giác có các tia đầu Ou, tia cuối Ov tạo thành góc có số đo là 30°. Tìm công thức tổng quát cho số đo của các góc lượng giác (Ou, Ov).",
+        options: ["A. 30° + k.180° (k ∈ ℤ)", "B. 30° + k.360° (k ∈ ℤ)", "C. π/6 + k.π (k ∈ ℤ)", "D. 30° + k.90° (k ∈ ℤ)"],
+        correct: 1
+    },
+    {
+        level: "Vận dụng", levelClass: "level-hard",
+        q: "Cho biểu thức P = 2sin²α + 5cos²α. Biết rằng sinα = 1/3. Tính giá trị của P.",
+        options: ["A. P = 43/9", "B. P = 19/9", "C. P = 23/9", "D. P = 5"],
+        correct: 0
+    }
+];
+
+let currentQuestionIndex = 0;
+let userAnswers = Array(quizData.length).fill(null);
+let totalTime = 300; // 5 phút = 300 giây
+let timerInterval;
+
+// Bắt đầu Trò Chơi
+function startQuiz() {
+    const name = document.getElementById("username").value.trim();
+    const uClass = document.getElementById("userclass").value.trim();
+
+    if (name === "" || uClass === "") {
+        alert("Vui lòng điền đầy đủ Họ tên và Lớp để lưu điểm số em nhé! 🥰");
+        return;
+    }
+
+    // Chuyển màn hình
+    document.getElementById("start-screen").classList.remove("active");
+    document.getElementById("quiz-screen").classList.add("active");
+
+    // Hiển thị thông tin
+    document.getElementById("display-info").innerText = `${name} - Lớp: ${uClass}`;
+
+    // Khởi động đếm ngược
+    startTimer();
+    // Load câu hỏi đầu tiên
+    loadQuestion();
+}
+
+// Bộ đếm thời gian
+function startTimer() {
+    timerInterval = setInterval(() => {
+        totalTime--;
+        let minutes = Math.floor(totalTime / 60);
+        let seconds = totalTime % 60;
+        
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        document.getElementById("timer").innerText = `${minutes}:${seconds}`;
+
+        if (totalTime <= 0) {
+            clearInterval(timerInterval);
+            alert("Hết giờ làm bài rồi! Hệ thống sẽ tự động chấm điểm.");
+            finishQuiz();
+        }
+    }, 1000);
+}
+
+// Tải câu hỏi lên giao diện
+function loadQuestion() {
+    const currentQuestion = quizData[currentQuestionIndex];
+    
+    // Cập nhật số câu, mức độ và nội dung câu hỏi
+    document.getElementById("question-counter").innerText = `Câu hỏi ${currentQuestionIndex + 1}/${quizData.length}`;
+    
+    const levelBadge = document.getElementById("question-level");
+    levelBadge.innerText = currentQuestion.level;
+    levelBadge.className = `level-badge ${currentQuestion.levelClass}`;
+    
+    document.getElementById("question-text").innerText = currentQuestion.q;
+
+    // Cập nhật các nút đáp án
+    const optionsContainer = document.getElementById("options");
+    optionsContainer.innerHTML = "";
+
+    currentQuestion.options.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.innerText = option;
+        button.classList.add("option-btn");
+        
+        // Nếu câu hỏi này đã từng được chọn trước đó, tô màu nó
+        if (userAnswers[currentQuestionIndex] === index) {
+            button.classList.add("selected");
+        }
+
+        button.onclick = () => selectOption(index);
+        optionsContainer.appendChild(button);
+    });
+
+    // Cấu hình nút Quay lại / Tiếp theo / Nộp bài
+    if (currentQuestionIndex === 0) {
+        document.getElementById("prev-btn").style.display = "none";
+    } else {
+        document.getElementById("prev-btn").style.display = "inline-block";
+    }
+
+    if (currentQuestionIndex === quizData.length - 1) {
+        document.getElementById("next-btn").innerText = "Nộp bài và Xem Điểm 🌟";
+        document.getElementById("next-btn").style.backgroundColor = "var(--secondary-color)";
+        document.getElementById("next-btn").style.boxShadow = "0 4px 0 #319795";
+    } else {
+        document.getElementById("next-btn").innerText = "Tiếp theo";
+        document.getElementById("next-btn").style.backgroundColor = "var(--primary-color)";
+        document.getElementById("next-btn").style.boxShadow = "0 4px 0 #d94545";
+    }
+}
+
+// Xử lý khi chọn một đáp án
+function selectOption(index) {
+    userAnswers[currentQuestionIndex] = index;
+    
+    // Làm mới giao diện nút để cập nhật màu sắc lựa chọn mới
+    const buttons = document.querySelectorAll(".option-btn");
+    buttons.forEach((btn, idx) => {
+        if (idx === index) {
+            btn.classList.add("selected");
+        } else {
+            btn.classList.remove("selected");
+        }
+    });
+}
+
+// Nút tiếp theo hoặc nộp bài
+function nextQuestion() {
+    if (currentQuestionIndex < quizData.length - 1) {
+        currentQuestionIndex++;
+        loadQuestion();
+    } else {
+        // Nếu là câu cuối cùng thì tiến hành Nộp bài
+        if (confirm("Em có chắc chắn muốn nộp bài toán này không?")) {
+            clearInterval(timerInterval);
+            finishQuiz();
+        }
+    }
+}
+
+// Nút quay lại
+function prevQuestion() {
+    if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestion();
+    }
+}
+
+// Tính điểm và hiển thị kết quả
+function finishQuiz() {
+    let score = 0;
+    quizData.forEach((question, index) => {
+        if (userAnswers[index] === question.correct) {
+            score++;
+        }
+    });
+
+    // Chuyển màn hình kết quả
+    document.getElementById("quiz-screen").classList.remove("active");
+    document.getElementById("result-screen").classList.add("active");
+
+    // Điền thông tin kết quả
+    document.getElementById("res-name").innerText = document.getElementById("username").value;
+    document.getElementById("res-class").innerText = document.getElementById("userclass").value;
+    document.getElementById("res-score").innerText = score;
+
+    // Nhận xét vui nhộn theo số điểm
+    let comment = "";
+    if (score === 10) {
+        comment = "Thần đồng lượng giác xuất sắc! 👑 10 điểm tuyệt đối!";
+    } else if (score >= 8) {
+        comment = "Giỏi quá! Em nắm rất chắc kiến thức về cung và góc lượng giác rồi đấy! 🌟";
+    } else if (score >= 5) {
+        comment = "Khá tốt! Cố gắng ôn tập kỹ thêm các công thức biến đổi xíu nữa nhé! 👍";
+    } else {
+        comment = "Đừng buồn nhé! Hãy xem lại sách giáo khoa Toán 11 và thử sức lại lần sau nha! 💪";
+    }
+    document.getElementById("res-comment").innerText = comment;
+}
+</script>
+
+</body>
+</html>
